@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpService } from '../../../services/http.service';
-import { DatePipe } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { PageTitleComponent } from '../../page-title/page-title.component';
 import { TaskListComponent } from '../../task-list/task-list.component';
 import { StateService } from '../../../services/state.service';
@@ -9,12 +9,13 @@ import { StateService } from '../../../services/state.service';
 @Component({
   selector: 'app-all-tasks',
   standalone: true,
-  imports: [FormsModule,DatePipe,PageTitleComponent,TaskListComponent],
+  imports: [FormsModule,DatePipe,PageTitleComponent,TaskListComponent,CommonModule],
   templateUrl: './all-tasks.component.html',
   styleUrl: './all-tasks.component.scss'
 })
 export class AllTasksComponent {
 newTask="";
+isDuplicateTask : boolean=false;
 initialTaskList:any[]=[];
 taskList:any[]=[];
 httpService=inject(HttpService);
@@ -33,25 +34,35 @@ ngOnInit(){
 }
 
 addTask(){
-  this.httpService.addTask(this.newTask).subscribe(()=>{
+  if(this.taskList.some(task=>task.title.toLowerCase()===this.newTask.toLocaleLowerCase()))
+  {
+    this.isDuplicateTask=true;
+    return;
+  }
+    this.isDuplicateTask=false;
+    this.httpService.addTask(this.newTask).subscribe(()=>{
     this.newTask="";
     this.getAllTasks();
   })
+  
 }
 getAllTasks(){
-  // this.httpService.getAllTasks().subscribe((result:any)=>{
-  //   this.initialTaskList=this.taskList=result;
-  // })
+  this.httpService.getAllTasks().subscribe((result:any)=>{
+    this.initialTaskList=this.taskList=result;
+    this.sortTasks();
+  })
+}
 
-  this.httpService.getAllTasks().subscribe((result: any) => {
-    this.initialTaskList = this.taskList = result;
-  
-    // Sorting the tasks based on importance
-    this.taskList.sort((a,b) => {
-      return b.important - a.important;
-    });
+sortTasks(){
+  this.taskList = this.taskList.sort((a, b) => {
+    if (a.important && !b.important) {
+      return -1;
+    } else if (!a.important && b.important) {
+      return 1;
+    } else {
+      return 0;
+    }
   });
-
 }
 
 onComplete(task:any){
@@ -67,5 +78,12 @@ this.httpService.updateTask(task).subscribe(()=>{
   this.getAllTasks();
 })
 }
+
+onDelete(task:any){
+  task.important=true;
+  this.httpService.deleteTask(task).subscribe(()=>{
+    this.getAllTasks();
+  })
+  }
 
 }
