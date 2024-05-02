@@ -14,15 +14,18 @@ export class TaskListComponent {
 
  @Output() important=new EventEmitter<any>();
  @Output() complete=new EventEmitter<any>();
- @Output() delete =new EventEmitter<any>();
+ @Output() delete=new EventEmitter<any>();
+
  markImportant(task:any){
   this.important.emit(task);
  }
+
  markComplete(task:any){
   this.complete.emit(task);
  }
 
- deleteTask(task: any) {
+ deleteTask(task:any){
   this.delete.emit(task);
-  }
+ }
+
 }

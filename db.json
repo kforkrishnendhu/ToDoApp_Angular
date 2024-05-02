@@ -2,18 +2,21 @@
   "tasks": [
     {
       "id": "1",
-      "title": "Learn angular",
+      "title": "Bring books",
       "important": true,
       "completed": true
     },
     {
-      "id": "2cc3",
-      "title": "Bring books",
+      "id": "2",
+      "title": "Buy groceries",
+      "completed": true,
       "important": true
     },
     {
-      "id": "cf23",
-      "title": "Bring books"
+      "id": "3",
+      "title": "Learn angular",
+      "completed": true,
+      "important": true
     }
   ]
 }

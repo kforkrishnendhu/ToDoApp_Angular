@@ -15,7 +15,7 @@ import { StateService } from '../../../services/state.service';
 })
 export class AllTasksComponent {
 newTask="";
-isDuplicateTask : boolean=false;
+isDuplicateTask:boolean=false;
 initialTaskList:any[]=[];
 taskList:any[]=[];
 httpService=inject(HttpService);
@@ -34,8 +34,7 @@ ngOnInit(){
 }
 
 addTask(){
-  if(this.taskList.some(task=>task.title.toLowerCase()===this.newTask.toLocaleLowerCase()))
-  {
+  if(this.taskList.some((task)=>task.title.toLowerCase()===this.newTask.toLocaleLowerCase())){
     this.isDuplicateTask=true;
     return;
   }
@@ -44,8 +43,8 @@ addTask(){
     this.newTask="";
     this.getAllTasks();
   })
-  
 }
+
 getAllTasks(){
   this.httpService.getAllTasks().subscribe((result:any)=>{
     this.initialTaskList=this.taskList=result;
@@ -56,14 +55,22 @@ getAllTasks(){
 sortTasks(){
   this.taskList = this.taskList.sort((a, b) => {
     if (a.important && !b.important) {
-      return -1;
+      return -1; // Important tasks come before non-important tasks
     } else if (!a.important && b.important) {
-      return 1;
+      return 1; // Non-important tasks come after important tasks
     } else {
-      return 0;
+      // If both tasks are either important or non-important, sort by completion status
+      if (a.completed && !b.completed) {
+        return 1; // Completed tasks go below
+      } else if (!a.completed && b.completed) {
+        return -1; // Incomplete tasks go above
+      } else {
+        return 0; // Tasks are equal in terms of importance and completion status
+      }
     }
   });
 }
+
 
 onComplete(task:any){
 task.completed=true;
@@ -80,7 +87,6 @@ this.httpService.updateTask(task).subscribe(()=>{
 }
 
 onDelete(task:any){
-  task.important=true;
   this.httpService.deleteTask(task).subscribe(()=>{
     this.getAllTasks();
   })

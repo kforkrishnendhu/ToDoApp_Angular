@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -26,5 +27,6 @@ updateTask(task:any){
 deleteTask(task:any){
   return this.httpClient.delete("http://localhost:3000/tasks/"+task.id,task);
 }
+
 }
 
